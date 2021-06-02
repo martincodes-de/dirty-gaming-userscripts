@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Darkmode
-// @version      1.0.4
+// @version      1.0.5
 // @description  Nutzt einen Darkmode im Aktensystem
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
@@ -14,14 +14,20 @@
 
 var styles = [
   "body {background-color: #1c1a1a; color: white;}",
-    ".card {background-color: #262626; color: white !important;}",
-    "table {color: #fff !important;}",
-    ".form-control {color: black; !important}",
-    ".form-control:focus {color: black; !important}",
-    "h1, h2, h3, h4, h5, h6 {color: white; !important}",
-    ".verlaufaktentabelle {color: white !important}",
-    ".verlaufaktenname {color: white !important}",
-    ".bußgeldtag {border: 0}"
+  ".card {background-color: #262626; color: white !important;}",
+  "table {color: #fff !important;}",
+  ".form-control {color: black; !important}",
+  ".form-control:focus {color: black; !important}",
+  "h1, h2, h3, h4, h5, h6 {color: white; !important}",
+  ".verlaufaktentabelle {color: white !important}",
+  ".verlaufaktenname {color: white !important}",
+  ".bußgeldtag {border: 0}",
+  "table.table a {color:white;}",
+  "table.table input {color:white;}",
+  "table.table input:focus {color:white;}",
+  "#HalterabfrageKennzeichen.form-control {color:white !important;}",
+  "#HalterabfrageGestellnunner.form-control {color:white !important;}",
+  ".forensicsInput {color:white !important;}",
 ];
 
 var styletag = "<style>";
