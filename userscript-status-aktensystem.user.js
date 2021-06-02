@@ -5,7 +5,8 @@
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
 // @icon         https://i.imgur.com/q2zMMHS.png
-// @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-aktensystem.js
+// @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-aktensystem.user.js
+// @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-aktensystem.user.js
 // @grant        none
 // ==/UserScript==
 
