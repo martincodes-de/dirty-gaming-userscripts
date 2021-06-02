@@ -11,6 +11,6 @@
 // @grant        none
 // ==/UserScript==
 
-var body = document.getElementsByTagName("body")[0];
-var styleTag = "<link rel='stylesheet' href='https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-darkmode.css'/>";
-body.innerHTML += styleTag;
+var headTag = document.getElementsByTagName("head")[0];
+var neuesStyleTag = "<link rel='stylesheet' href='https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-darkmode.css'/>";
+headTag.innerHTML += neuesStyleTag;
