@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Waffenlizenzstatus direkt anzeigen
-// @version      1.0.2
+// @version      1.0.3
 // @description  Prüft ob eine Waffenlizenz vorhanden ist und gibt es beim Aufruf der Lizenzabfrage direkt als Informationsalert aus. Kann Sekunden sparen.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/lizenzen
@@ -13,6 +13,7 @@
 // ==/UserScript==
 
 var id_input = document.getElementById("LizenzaktenID");
+var nav = document.getElementsByTagName("ul")[0];
 
 function pruefeWaffenschein() {
     var zellen = document.querySelectorAll("table tr td");
@@ -31,11 +32,11 @@ function pruefeWaffenschein() {
         }
     }
 
-    if (waffenlizenz_vorhanden > 0) {
-        id_input.outerHTML += alert_waffenlizenz_vorhanden;
-    } else {
-        id_input.outerHTML += alert_waffenlizenz_nicht_vorhanden;
-    }
+        if (waffenlizenz_vorhanden > 0) {
+            nav.outerHTML += alert_waffenlizenz_vorhanden;
+        } else {
+            nav.outerHTML += alert_waffenlizenz_nicht_vorhanden;
+        }
 }
 
 id_input.addEventListener("keyup", pruefeWaffenschein);
