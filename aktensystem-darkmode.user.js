@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Darkmode
-// @version      1.0.3
+// @version      1.0.4
 // @description  Nutzt einen Darkmode im Aktensystem
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
@@ -33,16 +33,4 @@ for (let i = 0; i < styles.length; i++) {
 styletag += "</style>";
 
 document.getElementsByTagName("head")[0].innerHTML += styletag;
-
-/* Bußgeldrechner ersetzen */
-
-var bussgeldrechnerDIV = "<div id='bussgeldrechner' class='bußgeldtag'>" +
-        "<div class='btn-group' role='group'>" +
-            "<a href='https://bussgeldrechner.lspd-dirty.de' target='_blank' class='btn btn-primary btn-sm'>RTS Bußgeldrechner</a>" +
-            "<a href='https://docs.google.com/spreadsheets/d/1OjeNXUC13ciAv3YPX6NiGCHVLyjLrZx4Q1WkkejkmUc/edit#gid=424553797' target='_blank' class='btn btn-secondary btn-sm'>Bußgeldrechner 2.0</a>" +
-        "</div>" +
-    "</div>";
-
-document.getElementsByClassName("bußgeldtag")[0].outerHTML = bussgeldrechnerDIV; // Strafsacheakten Button
-document.getElementsByClassName("bußgeldtag")[1].outerHTML = bussgeldrechnerDIV; // Bußgeldakten Button
 
