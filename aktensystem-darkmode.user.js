@@ -44,4 +44,3 @@ for (let i = 0; i < styles.length; i++) {
 styletag += "</style>";
 
 document.getElementsByTagName("head")[0].innerHTML += styletag;
-
