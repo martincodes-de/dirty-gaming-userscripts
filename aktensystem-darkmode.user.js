@@ -1,10 +1,13 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Darkmode
-// @version      1.0.5
+// @version      1.0.6
 // @description  Nutzt einen Darkmode im Aktensystem
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
 // @match        file:///C:/Users/Martin/Desktop/Dirty-Aktensystem/*
+// @exclude      https://akte.dirty-gaming.com/personal
+// @exclude      https://akte.dirty-gaming.com/kammerlog
+// @exclude      https://akte.dirty-gaming.com/kammerlog/*
 // @icon         https://i.imgur.com/q2zMMHS.png
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-darkmode.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-darkmode.user.js
@@ -28,12 +31,14 @@ var styles = [
   "#HalterabfrageKennzeichen.form-control {color:white !important;}",
   "#HalterabfrageGestellnunner.form-control {color:white !important;}",
   ".forensicsInput {color:white !important;}",
+  "#buergerakteID.form-control {color:white !important;}",
+  "#buergerakteName.form-control {color:white !important;}",
 ];
 
 var styletag = "<style>";
 
 for (let i = 0; i < styles.length; i++) {
-    styletag += " "+styles[i];
+  styletag += " "+styles[i];
 }
 
 styletag += "</style>";
