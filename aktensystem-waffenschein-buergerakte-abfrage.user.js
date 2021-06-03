@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Waffenscheinstatus in Bürgerakte abfragen
-// @version      0.0.1
-// @description  Zeigt in Bürgerakte an, ob Waffenschein vorhanden ist oder nicht.
+// @version      1.0.0
+// @description  Zeigt in Bürgerakte an, ob Waffenschein vorhanden ist oder nicht und fügt eine Lizenzübersicht in die erste Tabelle ein.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/buerger/*
 // @match        file:///C:/Users/Martin/Desktop/Dirty-Aktensystem/*
@@ -21,16 +21,27 @@ var personalausweis_id = url_pfad.replace("/buerger/", "");
 var abfrage = new XMLHttpRequest();
 abfrage.open("GET", "https://akte.dirty-gaming.com/lizenzen/suche/"+personalausweis_id);
 abfrage.onload = function() {
-  if (this.status === 200) {
-      let lizenzen = JSON.parse(this.responseText);
+    if (this.status === 200) {
+        let lizenzen = JSON.parse(this.responseText);
+        let lizenzenListenPunkte = "";
 
-      for (let i = 0; i < lizenzen.length; i++) {
-          console.log(lizenzen[i]["name"]);
-          if (lizenzen[i]["name"] == "Waffenlizenz") {
-              document.getElementById("waffenschein-alert").innerText = "Waffenschein vorhanden!";
-              document.getElementById("waffenschein-alert").style.backgroundColor = "green";
-          }
-      }
-  }
+        for (let i = 0; i < lizenzen.length; i++) {
+            /* Waffenscheininformation einbinden */
+            console.log(lizenzen[i]["name"]);
+
+            if (lizenzen[i]["name"] == "Waffenlizenz") {
+                document.getElementById("waffenschein-alert").innerText = "Waffenschein vorhanden!";
+                document.getElementById("waffenschein-alert").style.backgroundColor = "green";
+            }
+
+            /* Lizenzen unter Waffenscheinbereich vorbereiten */
+            lizenzenListenPunkte += "<li>"+ lizenzen[i]["name"] +"</li>";
+        }
+
+        /* Liste in Tabelle einfügen */
+        var letzteTableRow = document.querySelectorAll("div#buergerakteUebersicht table tr")[4];
+        var neueTableRow = "<tr><td></td><td>Lizenzen</td><td>"+"<ul>"+ lizenzenListenPunkte +"</ul>"+"<tr>";
+        letzteTableRow.outerHTML += neueTableRow;
+    }
 };
 abfrage.send();
