@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Darkmode
-// @version      1.0.6
+// @version      1.0.7
 // @description  Nutzt einen Darkmode im Aktensystem
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
@@ -33,6 +33,9 @@ var styles = [
   ".forensicsInput {color:white !important;}",
   "#buergerakteID.form-control {color:white !important;}",
   "#buergerakteName.form-control {color:white !important;}",
+  "#LizenzaktenID.form-control {color:white !important;}",
+  "#dispatchesTable_filter {color:white !important;}",
+  "table.dataTable tbody tr {background-color:unset !important;}"
 ];
 
 var styletag = "<style>";
