@@ -37,6 +37,12 @@ var styles = [
   "#dispatchesTable_filter {color:white !important;}",
   "table.dataTable tbody tr {background-color:unset !important;}",
   ".table-hover tbody tr:hover {color: unset;}",
+"#fallakteNummer.form-control {color:white !important;}",
+  "#bearbeiterHaft.form-control {color:white !important;}",
+  "#anmerkungenHaft.form-control {color:white !important;}",
+  "#beschlagnahmungenHaft.form-control {color:white !important;}",
+  "#ortHaft.form-control {color:white !important;}",
+  "#haftzeit.form-control {color:white !important;}",
 ];
 
 var styletag = "<style>";
