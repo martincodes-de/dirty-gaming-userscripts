@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Darkmode
-// @version      1.0.8
+// @version      1.0.9
 // @description  Nutzt einen Darkmode im Aktensystem
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
