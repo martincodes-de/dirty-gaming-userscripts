@@ -23,6 +23,8 @@ const zeitBeiAufruf = Date.now();
 const neueDispatchesAlert = "<div id='neue-dispatches-alert' class='alert alert-warning' style='display: none'>Es gibt neu eingegangene Dispatches! Bitte Seite aktualisieren, um Dispatches zu sehen und zuzuweisen. <a href='/dispatch'>Seite aktualisieren</a></div>";
 const aktualisierenButton = document.getElementById("aktualisieren");
 
+var soundAktiv = 0;
+
 aktualisierenButton.outerHTML += neueDispatchesAlert;
 
 function checkDispatches() {
@@ -42,16 +44,22 @@ function checkDispatches() {
                 neueDispatches++;
 
                 /* Prüft ob Dispatch Panic buttons sind und erhöht wenn Wert */
-                if (dispatches[i]["dispatchName"] == "Panik-Button" && dispatches[i]["dispatchPassiert"].contains("[PANIKBUTTON]")) {
+                if (dispatches[i]["dispatchName"] == "Panik-Button") {
                     neuePanicButtons++;
                 }
             }
         }
 
         if (neueDispatches > 0) {
-            let sound = new Audio("https://www.lspd-dirty.de/userscript-assets/feuerwehrmelder.mp3");
-            sound.volume = 0.5;
-            sound.play();
+
+            /* Spiele Sound nur 1x ab. */
+            if (soundAktiv == 0) {
+                let sound = new Audio("https://www.lspd-dirty.de/userscript-assets/feuerwehrmelder.mp3");
+                sound.volume = 0.5;
+                sound.play();
+
+                soundAktiv++;
+            }
 
             let alert = document.getElementById("neue-dispatches-alert");
             alert.style.display = "block";
