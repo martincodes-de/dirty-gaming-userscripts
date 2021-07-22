@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellensystemverbesserung: Hinweise bei neuen, einkommenden Dispatches
-// @version      1.0.3
+// @version      1.0.4
 // @description  Fügt die Option hinzu, ein akustisches und visuelles Signal auszugeben, wenn neue Dispatches einkommen.
 // @author       martincodes
 // @match        https://leitstelle.dirty-gaming.com/dispatch
@@ -8,7 +8,7 @@
 // @icon         https://i.imgur.com/q2zMMHS.png
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-einkommende-dispatches-signal.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-einkommende-dispatches-signal.user.js
-// @grant        none
+// @grant        GM_notification
 // @run-at       document-body
 // ==/UserScript==
 
@@ -164,13 +164,27 @@ function checkDispatches() {
                 soundAktiv++;
             }
 
+            GM_notification({
+                title: "[LEITSTELLENSYSTEM] Neuer Dispatch",
+                text: "Es ging ein neuer Dispatch ins Leitstellensystem ein.",
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Info_Sign.svg/1200px-Info_Sign.svg.png",
+                timeout: 10
+            }, null)
+
             let alert = document.getElementById("neue-dispatches-alert");
             alert.style.display = "block";
             aktualisierenButton.style.display = "none";
 
-            /* Wenn es Panic Buttons gibt, wird das Modal aktiviert. */
+            /* Wenn es Panic Buttons gibt, wird das Modal aktiviert und eine GM-Notification gesendet. */
             if (neuePanicButtons > 0) {
                 panicbuttonModal.style.display = "block";
+
+                GM_notification({
+                    title: "[LEITSTELLENSYSTEM] Panicbutton betätigt",
+                    text: "Es ging ein Panicbutton ins Leitstellensystem ein.",
+                    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Ambox_warning_pn.svg/1200px-Ambox_warning_pn.svg.png",
+                    timeout: 30
+                }, null)
             }
         }
     };
