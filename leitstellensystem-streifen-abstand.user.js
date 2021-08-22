@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellenverbesserung: Streifen Abstand
-// @version      1.0.0
+// @version      1.0.1
 // @description  Gibt je Distpacht die maximal 5 nähesten Streifen.
 // @author       martincodes & gnamly
 // @match        https://leitstelle.dirty-gaming.com/dispatch
@@ -16,7 +16,7 @@
 
 var url_pfad = window.location.pathname;
 
-var streifenBox = "<div class='alert alert-info'><div>Streifenabstand zum Dispatch.</div>STREIFENDIST</div>";
+var streifenBox = "<details class='my-'><summary>Entfernungen der Streifen</summary><div class='alert alert-info'><div>Streifenabstand zum Dispatch.</div>STREIFENDIST</div></details>";
 var streifendist = "<div>STREIFE (CODE): DIST</div>";
 
 var alleDispatches = [];
