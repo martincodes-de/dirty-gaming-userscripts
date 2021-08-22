@@ -5,8 +5,8 @@
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
 // @icon         https://i.imgur.com/q2zMMHS.png
-// @updateURL    //TODO
-// @downloadURL  //TODO
+// @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensytem-blitzer-rechner.user.js
+// @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensytem-blitzer-rechner.user.js
 // @grant        none
 // @run-at       document-body
 // ==/UserScript==
