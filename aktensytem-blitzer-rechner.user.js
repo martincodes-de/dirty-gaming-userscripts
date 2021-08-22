@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.0.0
+// @version      1.0.1
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -18,7 +18,6 @@ var url_pfad = window.location.pathname;
 var personalausweis_id = url_pfad.replace("/buerger/", "");
 
 var bussgeldliste = document.querySelectorAll("ul.nav.nav-tabs")[1];
-console.log(bussgeldliste);
 var blitzerAlert = "<br/><br/><div class='alert alert-info'><div>ANZAHL offene(n) Blitzerakte(n) gefunden.</div><div>Gesamt Strafe: STRAFE$</div><div>Gesamt Geschwindigkeit: GESCHWkm/h</div></div>";
 
 
@@ -60,7 +59,7 @@ aktenAbfrage.onload = function() {
         blitzerAlert = blitzerAlert.replace("ANZAHL", allBlitzer.length);
         blitzerAlert = blitzerAlert.replace("STRAFE", summeGeld);
         blitzerAlert = blitzerAlert.replace("GESCHW", summeGeschwindigkeit);
-        bussgeldliste.outerHTML += blitzerAlert;
+        if(allBlitzer.length > 0) bussgeldliste.outerHTML += blitzerAlert;
     }
     else fehler = true;
 
