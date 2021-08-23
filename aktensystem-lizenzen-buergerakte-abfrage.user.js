@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Dirty-Gaming.com Aktensystemverbesserung: Waffenscheinstatus in Bürgerakte abfragen
-// @version      1.0.1
-// @description  Zeigt in Bürgerakte an, ob Waffenschein vorhanden ist oder nicht und fügt eine Lizenzübersicht in die erste Tabelle ein.
+// @name         Dirty-Gaming.com Aktensystemverbesserung: Lizenzen in Bürgerakte
+// @version      1.0.2
+// @description  Zeigt in Bürgerakte an, ob Waffenschein vorhanden ist oder nicht und fügt eine Lizenzübersicht in die erste Tabelle in der Übersicht ein.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/buerger/*
 // @match        file:///C:/Users/Martin/Desktop/Dirty-Aktensystem/*
