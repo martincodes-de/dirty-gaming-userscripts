@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellensystemverbesserung: Hinweise bei neuen, einkommenden Dispatches
-// @version      1.0.5
+// @version      1.0.6
 // @description  Fügt die Option hinzu, ein akustisches und visuelles Signal auszugeben, wenn neue Dispatches einkommen.
 // @author       martincodes
 // @match        https://leitstelle.dirty-gaming.com/dispatch
@@ -23,10 +23,10 @@ const zeitBeiAufruf = Date.now();
 const neueDispatchesAlert = "<div id='neue-dispatches-alert' class='alert alert-warning' style='display: none'>Es gibt neu eingegangene Dispatches! Bitte Seite aktualisieren, um Dispatches zu sehen und zuzuweisen. <a href='/dispatch'>Seite aktualisieren</a></div>";
 const aktualisierenButton = document.getElementById("aktualisieren");
 
+aktualisierenButton.outerHTML += neueDispatchesAlert;
+
 var alleStreifenIDs = [];
 var soundAktiv = 0;
-
-aktualisierenButton.outerHTML += neueDispatchesAlert;
 
 /* Panic Button-Modals und Co. */
 
@@ -157,7 +157,7 @@ function checkDispatches() {
 
             /* Spiele Sound nur 1x ab. */
             if (soundAktiv == 0) {
-                let sound = new Audio("https://www.lspd-dirty.de/userscript-assets/feuerwehrmelder.mp3");
+                let sound = new Audio("https://www.lspd-dirty.de/userscript-assets/piep.mp3");
                 sound.volume = 0.5;
                 sound.play();
 
