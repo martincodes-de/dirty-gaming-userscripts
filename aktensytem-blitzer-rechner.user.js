@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.2.0
+// @version      1.2.1
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
