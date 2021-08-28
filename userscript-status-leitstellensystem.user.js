@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellensystemverbesserung: Status für Userscripts anzeigen
-// @version      1.0.2
+// @version      1.0.3
 // @description  Zeigt im Menü an, dass Userscripts verwendet werden.
 // @author       martincodes
 // @match        https://leitstelle.dirty-gaming.com/*
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-leitstellensystem.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-leitstellensystem.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var body = document.getElementsByTagName("body")[0];

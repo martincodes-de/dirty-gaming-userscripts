@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellenverbesserung: Streifen Abstand
-// @version      1.0.1
+// @version      1.0.2
 // @description  Gibt je Distpacht die maximal 5 nähesten Streifen.
 // @author       martincodes & gnamly
 // @match        https://leitstelle.dirty-gaming.com/dispatch
@@ -8,7 +8,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-streifen-abstand.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-streifen-abstand.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 // var alertDiv = document.querySelector("div.state");

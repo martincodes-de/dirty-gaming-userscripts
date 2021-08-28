@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellensystemverbesserung: Hinweise bei neuen, einkommenden Dispatches
-// @version      1.0.6
+// @version      1.0.7
 // @description  Fügt die Option hinzu, ein akustisches und visuelles Signal auszugeben, wenn neue Dispatches einkommen.
 // @author       martincodes
 // @match        https://leitstelle.dirty-gaming.com/dispatch
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-einkommende-dispatches-signal.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-einkommende-dispatches-signal.user.js
 // @grant GM_notification
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 /* HINWEIS - FÜR SOUNDAUSGABE

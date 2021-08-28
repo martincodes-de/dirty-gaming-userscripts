@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Status für Userscripts anzeigen
-// @version      1.0.3
+// @version      1.0.4
 // @description  Zeigt im Menü an, dass Userscripts verwendet werden.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/*
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-aktensystem.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/userscript-status-aktensystem.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var menuTitel = document.getElementById("navName");

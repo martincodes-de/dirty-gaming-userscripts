@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Bürgeraktenbilder
-// @version      1.0.0
+// @version      1.0.1
 // @description  Fügt eine Verknüpfung mit dem LSPDPSYS hinzu.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -9,7 +9,7 @@
 // @updateURL
 // @downloadURL
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var url_pfad = window.location.pathname;

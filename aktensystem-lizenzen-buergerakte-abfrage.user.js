@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Lizenzen in Bürgerakte
-// @version      1.0.2
+// @version      1.0.3
 // @description  Zeigt in Bürgerakte an, ob Waffenschein vorhanden ist oder nicht und fügt eine Lizenzübersicht in die erste Tabelle in der Übersicht ein.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-lizenzen-buergerakte-abfrage.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-lizenzen-buergerakte-abfrage.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var alertDiv = document.querySelector("div.state");

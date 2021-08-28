@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Zuletzt angeklickte Akte anzeigen
-// @version      1.0.0
+// @version      1.0.1
 // @description  Fügt dem Titel einer Fallakte bei der Öffnung eine Farbe hinzu. So sehen Sie, welche Fallakte Sie zuletzt geöffnet haben.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-zuletzt-angeklickte-akte-markieren.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-zuletzt-angeklickte-akte-markieren.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var fallaktenTitel = document.querySelectorAll("td.verlaufaktenname a[data-fallakte]");

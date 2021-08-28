@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Leitstellensystemverbesserung: Schwarze Streifen ausblenden
-// @version      1.0.1
+// @version      1.0.2
 // @description  Fügt die Option hinzu, Streifen mit schwarzem Hintergrund auszublenden. (Sind meistens Code 10 oder so).
 // @author       martincodes
 // @match        https://leitstelle.dirty-gaming.com/dispatch
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-schwarze-streifen-ausblenen-dispatching.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/leitstellensystem-schwarze-streifen-ausblenen-dispatching.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var schwarzeStreifen = document.getElementsByClassName("schwarz");

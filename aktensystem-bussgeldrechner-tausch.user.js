@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Bußgeldrechnertausch
-// @version      1.0.2
+// @version      1.0.3
 // @description  Tauscht den Bußgeldrechnerbutton mit den Bußgeldrechnern, die wir nutzen, da der interne Rechner nicht funktional ist.
 // @author       martincodes
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -9,7 +9,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-bussgeldrechner-tausch.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-bussgeldrechner-tausch.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 var bussgeldtags = document.getElementsByClassName("bußgeldtag");
