@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.2.2
+// @version      1.2.3
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -158,34 +158,36 @@ function berechnungHinzufuegen(akte, straf) {
     if(berechnungsQueue === 0) htmlDarstellen();
 }
 
-var bussgeldliste = document.querySelectorAll("ul.nav.nav-tabs")[1];
-var blitzerAlert = "<div class='alert alert-info'>"+
-"<div>ANZAHL offene Blitzerakten gefunden.</div>"+
-"<div>Gesamt Strafe: STRAFE$</div>"+
-"<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
-"<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
-"<details><summary>Auflistung</summary>LISTE</details>"+
-"</div>";
-var blitzerListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
-var eingriffAlert = "<div class='alert alert-info'>"+
-"<div>ANZAHL offene Gefährliche Eingriffe gefunden.</div>"+
-"<div>Gesamt Strafe: STRAFE$</div>"+
-"<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
-"<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
-"<details><summary>Auflistung</summary>LISTE</details>"+
-"</div>";
-var eingriffListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
-var steuerAlert = "<div class='alert alert-info'>"+
-"<div>ANZAHL offene Steuerhinterziehungen durch System gefunden.</div>"+
-"<div>Gesamt Strafe: STRAFE$</div>"+
-"<details><summary>Auflistung</summary>LISTE</details>"+
-"</div>";
-var steuerListeTeil = "<div>Fahrzeug: \"AUTO\" Nicht einziehbarer Betrag: STRAFE$";
 
-var fehlerAlert = "<div class='alert alert-danger'>FEHLER BEI DER AKTEN ABFRAGE</div>";
-var nichtsAlert = "<div class='alert alert-success'>Keine offenen System Akten gefunden</div>";
 
 function htmlDarstellen() {
+    var bussgeldliste = document.querySelectorAll("ul.nav.nav-tabs")[1];
+    let blitzerAlert = "<div class='alert alert-info'>"+
+    "<div>ANZAHL offene Blitzerakten gefunden.</div>"+
+    "<div>Gesamt Strafe: STRAFE$</div>"+
+    "<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
+    "<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
+    "<details><summary>Auflistung</summary>LISTE</details>"+
+    "</div>";
+    let blitzerListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
+    let eingriffAlert = "<div class='alert alert-info'>"+
+    "<div>ANZAHL offene Gefährliche Eingriffe gefunden.</div>"+
+    "<div>Gesamt Strafe: STRAFE$</div>"+
+    "<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
+    "<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
+    "<details><summary>Auflistung</summary>LISTE</details>"+
+    "</div>";
+    let eingriffListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
+    let steuerAlert = "<div class='alert alert-info'>"+
+    "<div>ANZAHL offene Steuerhinterziehungen durch System gefunden.</div>"+
+    "<div>Gesamt Strafe: STRAFE$</div>"+
+    "<details><summary>Auflistung</summary>LISTE</details>"+
+    "</div>";
+    let steuerListeTeil = "<div>Fahrzeug: \"AUTO\" Nicht einziehbarer Betrag: STRAFE$";
+
+    let fehlerAlert = "<div class='alert alert-danger'>FEHLER BEI DER AKTEN ABFRAGE</div>";
+    let nichtsAlert = "<div class='alert alert-success'>Keine offenen System Akten gefunden</div>";
+
     blitzerAlert = blitzerAlert.replace("ANZAHL", blitzer.count);
     blitzerAlert = blitzerAlert.replace("STRAFE", blitzer.summeGeld);
     blitzerAlert = blitzerAlert.replace("GESCHWI", blitzer.summeGeschwindigkeitInner);
