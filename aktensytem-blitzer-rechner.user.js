@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.2.1
+// @version      1.2.2
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -14,7 +14,7 @@
 // var alertDiv = document.querySelector("div.state");
 // alertDiv.innerHTML += "<b class='stateButton' id='waffenschein-alert'>Kein Waffenschein</b>";
 
-window.addEventListener('DOMContentLoaded', start);
+// window.addEventListener('DOMContentLoaded', start);
 
 var url_pfad = "";
 var personalausweis_id ="";
@@ -42,7 +42,7 @@ var steuer = {
 };
 var fehler = false;
 var berechnungsQueue = 0;
-
+start();
 function start() {
     url_pfad = window.location.pathname;
     personalausweis_id = url_pfad.replace("/buerger/", "");
