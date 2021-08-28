@@ -12,7 +12,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-darkmode.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensystem-darkmode.user.js
 // @grant        none
-// @run-at       document-end
+// @run-at       document-body
 // ==/UserScript==
 
 var styles = [
