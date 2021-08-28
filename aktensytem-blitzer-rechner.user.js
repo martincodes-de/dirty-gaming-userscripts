@@ -8,7 +8,7 @@
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensytem-blitzer-rechner.user.js
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensytem-blitzer-rechner.user.js
 // @grant        none
-// @run-at       document-body
+// @run-at       document-end
 // ==/UserScript==
 
 // var alertDiv = document.querySelector("div.state");
