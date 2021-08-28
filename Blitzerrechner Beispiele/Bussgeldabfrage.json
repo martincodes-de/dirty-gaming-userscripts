@@ -1,0 +1,47 @@
+[
+    {
+        "id": 108491,
+        "tbCharacterId": 14570,
+        "tbPlayerId": -1,
+        "tbGruppenId": 1,
+        "tbCharacterFahrzeugeId": -1,
+        "aktetyp": "Polizei Bussgeld",
+        "titel": "TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)",
+        "open": 0,
+        "angelegt": "2021-08-17T20:13:58.000Z",
+        "autor": -1,
+        "deleted": 0,
+        "name": "Jayden Evens ",
+        "authorname": "System"
+    },
+    {
+        "id": 108130,
+        "tbCharacterId": 14570,
+        "tbPlayerId": -1,
+        "tbGruppenId": 1,
+        "tbCharacterFahrzeugeId": -1,
+        "aktetyp": "Polizei Bussgeld",
+        "titel": "TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)",
+        "open": 0,
+        "angelegt": "2021-08-15T21:42:04.000Z",
+        "autor": -1,
+        "deleted": 0,
+        "name": "Jayden Evens ",
+        "authorname": "System"
+    },
+    {
+        "id": 108108,
+        "tbCharacterId": 14570,
+        "tbPlayerId": -1,
+        "tbGruppenId": 1,
+        "tbCharacterFahrzeugeId": -1,
+        "aktetyp": "Polizei Bussgeld",
+        "titel": "TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)",
+        "open": 0,
+        "angelegt": "2021-08-15T20:29:08.000Z",
+        "autor": -1,
+        "deleted": 0,
+        "name": "Jayden Evens ",
+        "authorname": "System"
+    }
+]

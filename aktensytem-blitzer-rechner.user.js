@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.0.1
+// @version      1.2.0
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -14,92 +14,234 @@
 // var alertDiv = document.querySelector("div.state");
 // alertDiv.innerHTML += "<b class='stateButton' id='waffenschein-alert'>Kein Waffenschein</b>";
 
-var url_pfad = window.location.pathname;
-var personalausweis_id = url_pfad.replace("/buerger/", "");
+window.addEventListener('DOMContentLoaded', start);
 
-var bussgeldliste = document.querySelectorAll("ul.nav.nav-tabs")[1];
-var blitzerAlert = "<br/><br/><div class='alert alert-info'><div>ANZAHL offene(n) Blitzerakte(n) gefunden.</div><div>Gesamt Strafe: STRAFE$</div><div>Gesamt Geschwindigkeit: GESCHWkm/h</div></div>";
+var url_pfad = "";
+var personalausweis_id ="";
 
-
-/*  Beispiel Ausgabe der Akten Abfrage
-[
-    {"id":108491,"tbCharacterId":14570,"tbPlayerId":-1,"tbGruppenId":1,"tbCharacterFahrzeugeId":-1,"aktetyp":"Polizei Bussgeld","titel":"TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)","open":0,"angelegt":"2021-08-17T20:13:58.000Z","autor":-1,"deleted":0,"name":"Jayden Evens ","authorname":"System"},
-    {"id":108130,"tbCharacterId":14570,"tbPlayerId":-1,"tbGruppenId":1,"tbCharacterFahrzeugeId":-1,"aktetyp":"Polizei Bussgeld","titel":"TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)","open":0,"angelegt":"2021-08-15T21:42:04.000Z","autor":-1,"deleted":0,"name":"Jayden Evens ","authorname":"System"},
-    {"id":108108,"tbCharacterId":14570,"tbPlayerId":-1,"tbGruppenId":1,"tbCharacterFahrzeugeId":-1,"aktetyp":"Polizei Bussgeld","titel":"TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)","open":0,"angelegt":"2021-08-15T20:29:08.000Z","autor":-1,"deleted":0,"name":"Jayden Evens ","authorname":"System"},
-]
-*/
-
-var allBlitzer = [];
-var summeGeld = 0;
-var summeGeschwindigkeit = 0;
+var allSystem = [];
+var blitzer = {
+    count: 0,
+    summeGeld: 0,
+    summeGeschwindigkeitInner: 0,
+    summeGeschwindigkeitAuser: 0,
+    akten: []
+};
+var eingriff = {
+    count: 0,
+    summeGeld: 0,
+    summeGeschwindigkeitInner: 0,
+    summeGeschwindigkeitAuser: 0,
+    akten: []
+};
+var steuer = {
+    count: 0,
+    summeGeld: 0,
+    summeGeschwindigkeit: 0,
+    akten: []
+};
 var fehler = false;
+var berechnungsQueue = 0;
 
+function start() {
+    url_pfad = window.location.pathname;
+    personalausweis_id = url_pfad.replace("/buerger/", "");
 
+    //Abfrage aller Bußgeldakten
+    var busgeldAktenAbfrage = new XMLHttpRequest();
+    busgeldAktenAbfrage.open("GET", "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Bussgeld/all/"+personalausweis_id, false);
+    busgeldAktenAbfrage.onload = function() {
+        if(this.status === 200){
+            console.log("Bußgeld Akten Abfrage erfolgreich");
+            //Alle Akten durchsuchen nach offenen Bußgeldakten
+            let akten = JSON.parse(this.responseText);
 
-//Abfrage aller Bußgeldakten
-var aktenAbfrage = new XMLHttpRequest();
-aktenAbfrage.open("GET", "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Bussgeld/all/"+personalausweis_id, false);
-aktenAbfrage.onload = function() {
-    if(this.status === 200){
-        console.log("Akten Abfrage erfolgreich");
-        allBlitzer = [];
-        summeGeld = 0;
-        summeGeschwindigkeit = 0;
-        //Alle Akten durchsuchen nach offenen Bußgeldakten
-        let akten = JSON.parse(this.responseText);
-        let regBlitzer = /^TC §13 Abs\. .* Überschreitung.*/i;
-        for(const akte of akten) {
-            if(akte.open === 1 && akte.authorname === "System" && akte.titel.match(regBlitzer)){
-                //Wenn es eine offene Blitzerakte ist, dann berechnen wir Geld und Geschwindigkeit
-                allBlitzer.push(akte);
-                berechnungHinzufuegen(akte.id);
+            for(const akte of akten) {
+                if(akte.open === 1 && akte.authorname === "System"){
+                    allSystem.push(akte);
+                }
             }
         }
-        console.log("gefundene Blitzer: "+allBlitzer.length);
-        blitzerAlert = blitzerAlert.replace("ANZAHL", allBlitzer.length);
-        blitzerAlert = blitzerAlert.replace("STRAFE", summeGeld);
-        blitzerAlert = blitzerAlert.replace("GESCHW", summeGeschwindigkeit);
-        if(allBlitzer.length > 0) bussgeldliste.outerHTML += blitzerAlert;
+        else fehler = true;
+    };
+    busgeldAktenAbfrage.send();
+
+    var strafAktenAbfrage = new XMLHttpRequest();
+    strafAktenAbfrage.open("GET", "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Strafsache/all/"+personalausweis_id, false);
+    strafAktenAbfrage.onload = function() {
+        if(this.status === 200){
+            console.log("Straf Akten Abfrage erfolgreich");
+            //Alle Akten durchsuchen nach offenen Bußgeldakten
+            let akten = JSON.parse(this.responseText);
+
+            for(const akte of akten) {
+                if(akte.open === 1 && akte.authorname === "System"){
+                    allSystem.push(akte);
+                }
+            }
+        }
+        else fehler = true;
+    };
+    strafAktenAbfrage.send();
+
+    berechnungsQueue = allSystem.length;
+    if(berechnungsQueue === 0) htmlDarstellen();
+    console.log("Es werden nun "+berechnungsQueue+" akten abgefragt");
+
+    var xhr = [], i;
+    for(i = 0;i < allSystem.length;i++) {
+        let systemAkte = allSystem[i];
+        let url = "";
+        if(systemAkte.aktetyp === "Polizei Bussgeld") url = "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Bussgeld/"+systemAkte.id;
+        else url = "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Strafsache/"+systemAkte.id;
+        
+        // console.log('Akten Abfrage für url: '+url);
+        xhr[i] = new XMLHttpRequest();
+        xhr[i].open("GET", url, true);
+        xhr[i].onloadend = akteAbfrageFertig;
+        xhr[i].send();
     }
-    else fehler = true;
+    if(fehler) console.log('fehler im Blitzerrechner');
+}
 
-};
-aktenAbfrage.send();
+function akteAbfrageFertig() {
+    // console.log("Akte "+this.responseURL+" status "+this.status);
+    if(this.status === 200) {
+        let akte = JSON.parse(this.responseText);
+        berechnungHinzufuegen(akte, akte.schwersteStraftat !== undefined);
+    }
+}
 
-function berechnungHinzufuegen(id) {
-    /* Beispiel Ausgabe einer einzelnen Akten abfrage
-{
-    "canEdit":true,
-    "strafe":"270",
-    "strafe_author":"22.8.2021 / ",
-    "einsatzort":"East Vinewood, Mirror Park Blvd, York St",
-    "einsatzort_author":"22.8.2021 / ",
-    "bussgeld":"18x TC §13 Abs. 1a,b,c,f Überschreitung der Geschwindigkeit (innerorts)\r\n\r\nHaftzeit: 0, Geldstrafe: $ 270,00",
-    "bussgeld_author":"22.8.2021 / ",
-    "datum":"Sonntag, 22. August 2021",
-    "datum_author":"22.8.2021 / ",
-    "uhrzeit":"00:45",
-    "uhrzeit_author":"22.8.2021 / ",
-    "kommentar":"Amtlich-anerkannte Geschwindigkeitsmesseinrichtung",
-    "kommentar_author":"22.8.2021 / ",
-    "geschehen":"Person wurde vom Blitzer in East Vinewood, Mirror Park Blvd, York St im Fahrzeug Elegy Retro Custom ( Kennzeichen \"LS HR RC\" ) mit einer Geschwindigkeit von 118 km/h bei erlaubten 80 km/h gemessen. Abzüglich der gesetzlichen Toleranz von 20 km/h ist dies eine Geschwindigkeitsüberschreitung von 18 km/h und daraus resultierend ein Bußgeld von $ 270.",
-    "geschehen_author":"22.8.2021 / "}
-*/
-    var blitzerAbfrage = new XMLHttpRequest();
-    blitzerAbfrage.open("GET", "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Bussgeld/"+id, false);
-    blitzerAbfrage.onload = function() {
-        console.log("Blitzer "+id+" status "+this.status);
-        if(this.status === 200) {
-            let blitzer = JSON.parse(this.responseText);
-            summeGeld += parseInt(blitzer.strafe);
-            let text = blitzer.geschehen;
+function berechnungHinzufuegen(akte, straf) {
+    if(straf){ //Stafakten nach Gefährlichem Eingriff oder Steuerhinterziehung durchsuchen
+        let regSteuer = /^StG.*Steuerhinterziehung/;
+        let regGef = /^StG.*Gefährlicher Eingriff in den Straßenverkehr/;
+        if(akte.schwersteStraftat.match(regSteuer)) {
+            steuer.count++;
+            let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
+            steuer.summeGeld += parseFloat(money);
+            akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("für ")+"für ".length, akte.geschehen.indexOf("\" ")+1);
+            akte.geld = parseFloat(money);
+            steuer.akten.push(akte);
+        } 
+        else if(akte.schwersteStraftat.match(regGef)) {
+            eingriff.count++;
+            let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
+            eingriff.summeGeld += parseInt(money);
+            let geschw = parseInt(akte.bussgeld.substring(0, akte.bussgeld.indexOf('x')));
+            if(akte.bussgeld.includes("innerorts")) eingriff.summeGeschwindigkeitInner += geschw;
+            else eingriff.summeGeschwindigkeitAuser += geschw;
+            akte.geschw = geschw;
+            akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("im Fahrzeug ")+"im Fahrzeug".length, akte.geschehen.indexOf(") ")+1);
+            akte.geld = parseInt(money);
+            eingriff.akten.push(akte);
+        }
+    }
+    else { //Bußgeldakten nach Blitzer durchsuchen
+        let regBlitzer = /TC §13 Abs\. .* Überschreitung.*/i;
+        if(akte.bussgeld.match(regBlitzer)) {
+            blitzer.count++;
+            blitzer.summeGeld += parseInt(akte.strafe);
+            let text = akte.geschehen;
             let suchText1 = "dies eine Geschwindigkeitsüberschreitung von ";
             let indexSuchText1 = text.indexOf(suchText1);
             let indexEnde = text.indexOf("km/h", indexSuchText1);
             let geschwindigkeit = parseInt(text.substring(indexSuchText1+suchText1.length, indexEnde));
-            summeGeschwindigkeit += geschwindigkeit;
+            if(akte.bussgeld.includes("innerorts")) blitzer.summeGeschwindigkeitInner += geschwindigkeit;
+            else blitzer.summeGeschwindigkeitAuser += geschwindigkeit;
+            akte.geschw = geschwindigkeit;
+            akte.auto = text.substring(text.indexOf("im Fahrzeug ")+"im Fahrzeug".length, text.indexOf(") ")+1);
+            blitzer.akten.push(akte);
         }
-        else fehler = true;
-    };
-    blitzerAbfrage.send();
+    }
+    berechnungsQueue--;
+    if(berechnungsQueue === 0) htmlDarstellen();
+}
+
+var bussgeldliste = document.querySelectorAll("ul.nav.nav-tabs")[1];
+var blitzerAlert = "<div class='alert alert-info'>"+
+"<div>ANZAHL offene Blitzerakten gefunden.</div>"+
+"<div>Gesamt Strafe: STRAFE$</div>"+
+"<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
+"<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
+"<details><summary>Auflistung</summary>LISTE</details>"+
+"</div>";
+var blitzerListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
+var eingriffAlert = "<div class='alert alert-info'>"+
+"<div>ANZAHL offene Gefährliche Eingriffe gefunden.</div>"+
+"<div>Gesamt Strafe: STRAFE$</div>"+
+"<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
+"<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
+"<details><summary>Auflistung</summary>LISTE</details>"+
+"</div>";
+var eingriffListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
+var steuerAlert = "<div class='alert alert-info'>"+
+"<div>ANZAHL offene Steuerhinterziehungen durch System gefunden.</div>"+
+"<div>Gesamt Strafe: STRAFE$</div>"+
+"<details><summary>Auflistung</summary>LISTE</details>"+
+"</div>";
+var steuerListeTeil = "<div>Fahrzeug: \"AUTO\" Nicht einziehbarer Betrag: STRAFE$";
+
+var fehlerAlert = "<div class='alert alert-danger'>FEHLER BEI DER AKTEN ABFRAGE</div>";
+var nichtsAlert = "<div class='alert alert-success'>Keine offenen System Akten gefunden</div>";
+
+function htmlDarstellen() {
+    blitzerAlert = blitzerAlert.replace("ANZAHL", blitzer.count);
+    blitzerAlert = blitzerAlert.replace("STRAFE", blitzer.summeGeld);
+    blitzerAlert = blitzerAlert.replace("GESCHWI", blitzer.summeGeschwindigkeitInner);
+    blitzerAlert = blitzerAlert.replace("GESCHWA", blitzer.summeGeschwindigkeitAuser);
+    var blitzerListe = "";
+    for(const akte of blitzer.akten) {
+        let text = blitzerListeTeil;
+        text = text.replace("ORT", akte.einsatzort).replace("WAS", akte.bussgeld.includes("innerorts") ? "innerorts" : "außerorts");
+        text = text.replace("GESCHW", akte.geschw).replace("AUTO", akte.auto).replace("STRAFE", akte.strafe);
+        blitzerListe += text;
+    }
+    blitzerAlert = blitzerAlert.replace("LISTE", blitzerListe);
+
+    eingriffAlert = eingriffAlert.replace("ANZAHL", eingriff.count);
+    eingriffAlert = eingriffAlert.replace("STRAFE", eingriff.summeGeld);
+    eingriffAlert = eingriffAlert.replace("GESCHWI", eingriff.summeGeschwindigkeitInner);
+    eingriffAlert = eingriffAlert.replace("GESCHWA", eingriff.summeGeschwindigkeitAuser);
+    var eingriffListe = "";
+    for(const akte of eingriff.akten) {
+        let text = eingriffListeTeil;
+        text = text.replace("ORT", akte.einsatzort).replace("WAS", akte.bussgeld.includes("innerorts") ? "innerorts" : "außerorts");
+        text = text.replace("GESCHW", akte.geschw).replace("AUTO", akte.auto).replace("STRAFE", akte.geld);
+        eingriffListe += text;
+    }
+    eingriffAlert = eingriffAlert.replace("LISTE", eingriffListe);
+
+    steuerAlert = steuerAlert.replace("ANZAHL", steuer.count);
+    steuerAlert = steuerAlert.replace("STRAFE", steuer.summeGeld);
+    var steuerListe = "";
+    for(const akte of steuer.akten) {
+        let text = steuerListeTeil;
+        text = text.replace("AUTO", akte.auto).replace("STRAFE", akte.geld);
+        steuerListe += text;
+    }
+    steuerAlert = steuerAlert.replace("LISTE", steuerListe);
+
+    console.log(blitzer.count + " gefundene Blitzer");
+    console.log(eingriff.count + " gefundene Gefährliche Eingriffe");
+
+    var finaleErweiterung = "<br/><br/>";
+    if(blitzer.count === 0 && eingriff.count === 0 && steuer.count === 0){
+        finaleErweiterung += nichtsAlert;
+    }
+    if(blitzer.count > 0) {
+        finaleErweiterung += blitzerAlert;
+    }
+    if(eingriff.count > 0) {
+        finaleErweiterung += eingriffAlert;
+    }
+    if(steuer.count > 0) {
+        finaleErweiterung += steuerAlert;
+    }
+
+    if(fehler) {
+        finaleErweiterung = fehlerAlert;
+    }
+
+    bussgeldliste.outerHTML += finaleErweiterung;
 }
