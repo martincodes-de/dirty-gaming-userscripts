@@ -23,6 +23,7 @@ function html() {
   navList.innerHTML += getNavItem('http://lspdbsys.lspd-dirty.de/', 'Bußgeldrechner 3.0 | Bsys', 'fas fa-calculator');
   navList.innerHTML += getNavItem('https://docs.google.com/spreadsheets/d/11K2fFxPFQXXOrJ1EwF_FoUfOVnGT31dmCNCF6JtcuJM/edit#gid=1985602745', 'Copy Liste', 'fas fa-book');
   navList.innerHTML += getNavItem('https://docs.google.com/spreadsheets/d/1M8qI5G1p1CY0NdDB0LgZqL7581TTdUla1ofg7jecNzs/edit#gid=1725277514', 'Fahrzeugbeschlagnahmungsliste', 'fas fa-car')
+  navList.innerHTML += getNavItem('https://lspdfsys.lspd-dirty.de/login/', 'FRISK | Fsys', 'fas fa-fist-raised');
 }
 
 function getNavItem(link, title, icon) {
