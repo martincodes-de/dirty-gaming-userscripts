@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Linksammlung
-// @version      1.0.0
+// @version      1.1.0
 // @description  Ergänzt die Aktensystem um ein paar Links.
 // @author       gnamly
 // @match        https://akte.dirty-gaming.com/*
