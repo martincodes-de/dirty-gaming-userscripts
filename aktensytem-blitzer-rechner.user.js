@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.2.3
+// @version      1.3.0
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -40,6 +40,12 @@ var steuer = {
     summeGeschwindigkeit: 0,
     akten: []
 };
+var kraftstoff = {
+    count: 0,
+    summeGeld: 0,
+    summeKraftstoff: 0,
+    akten: []
+}
 var fehler = false;
 var berechnungsQueue = 0;
 start();
@@ -116,6 +122,7 @@ function berechnungHinzufuegen(akte, straf) {
     if(straf){ //Stafakten nach Gefährlichem Eingriff oder Steuerhinterziehung durchsuchen
         let regSteuer = /^StG.*Steuerhinterziehung/;
         let regGef = /^StG.*Gefährlicher Eingriff in den Straßenverkehr/;
+        let regKraft = /^Kraftstoffdiebstahl/;
         if(akte.schwersteStraftat.match(regSteuer)) {
             steuer.count++;
             let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
@@ -135,6 +142,17 @@ function berechnungHinzufuegen(akte, straf) {
             akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("im Fahrzeug ")+"im Fahrzeug".length, akte.geschehen.indexOf(") ")+1);
             akte.geld = parseInt(money);
             eingriff.akten.push(akte);
+        }
+        else if(akte.schwersteStraftat.match(regKraft)) {
+            kraftstoff.count++;
+            const geld = parseInt(akte.bussgeld);
+            kraftstoff.summeGeld += geld;
+            const stoff = parseFloat(akte.geschehen.substring(akte.geschehen.indexOf('Liter: ')+'Liter: '.length));
+            kraftstoff.summeKraftstoff += stoff;
+            akte.geld = geld;
+            akte.stoff = stoff;
+            akte.kennzeichen = akte.geschehen.substring(akte.geschehen.indexOf('Kennzeichen ')+'Kennzeichen '.length, akte.geschehen.indexOf(' Liter')-1);
+            kraftstoff.akten.push(akte);
         }
     }
     else { //Bußgeldakten nach Blitzer durchsuchen
@@ -184,6 +202,13 @@ function htmlDarstellen() {
     "<details><summary>Auflistung</summary>LISTE</details>"+
     "</div>";
     let steuerListeTeil = "<div>Fahrzeug: \"AUTO\" Nicht einziehbarer Betrag: STRAFE$";
+    let kraftstoffAlert = "<div class='alert alert-info'>"+
+    "<div>ANZAHL offene Kraftstoffdiebstähle durch System gefunden.</div>"+
+    "<div>Gesamter Betrag: BETRAG$</div>"+
+    "<div>Gesamter Kraftstoff: STOFF</div>"+
+    "<details><summary>Auflistung</summary>LISTE</details>"+
+    "</div>";
+    let kraftstoffListeTeil = "<div>Kennzeichen: \"KENNZEICHEN\" Kraftstoffmenge: STOFF Betrag: GELD$";
 
     let fehlerAlert = "<div class='alert alert-danger'>FEHLER BEI DER AKTEN ABFRAGE</div>";
     let nichtsAlert = "<div class='alert alert-success'>Keine offenen System Akten gefunden</div>";
@@ -224,11 +249,23 @@ function htmlDarstellen() {
     }
     steuerAlert = steuerAlert.replace("LISTE", steuerListe);
 
+    kraftstoffAlert = kraftstoffAlert.replace("ANZAHL", kraftstoff.count);
+    kraftstoffAlert = kraftstoffAlert.replace("BETRAG", kraftstoff.summeGeld);
+    kraftstoffAlert = kraftstoffAlert.replace("STOFF", kraftstoff.summeKraftstoff);
+    var kraftstoffListe = "";
+    for(const akte of kraftstoff.akten) {
+        let text = kraftstoffListeTeil;
+        text = text.replace("KENNZEICHEN", akte.kennzeichen).replace("STOFF", akte.stoff).replace("GELD", akte.geld);
+        kraftstoffListe += text;
+    }
+    kraftstoffAlert = kraftstoffAlert.replace("LISTE", kraftstoffListe);
+
+
     console.log(blitzer.count + " gefundene Blitzer");
     console.log(eingriff.count + " gefundene Gefährliche Eingriffe");
 
     var finaleErweiterung = "<br/><br/>";
-    if(blitzer.count === 0 && eingriff.count === 0 && steuer.count === 0){
+    if(blitzer.count === 0 && eingriff.count === 0 && steuer.count === 0 && kraftstoff.count === 0){
         finaleErweiterung += nichtsAlert;
     }
     if(blitzer.count > 0) {
@@ -239,6 +276,9 @@ function htmlDarstellen() {
     }
     if(steuer.count > 0) {
         finaleErweiterung += steuerAlert;
+    }
+    if(kraftstoff.count > 0) {
+        finaleErweiterung += kraftstoffAlert;
     }
 
     if(fehler) {
