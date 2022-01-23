@@ -37,10 +37,8 @@ function start() {
 function html() {
   const tableBody = document.getElementById('buergeraktePolizeiBussgeldAktenVerlauf').children[0];
   setTimeout(()=>{
-    console.log('table body length', tableBody.children.length);
     for(var i = 0;i < tableBody.children.length;i++) {
       const child = tableBody.children[i].children[0].children[0];
-      console.log('tr', child);
       child.innerHTML = '<b>AktNr.: ' + akten[i].id + '</b> - ' + child.innerHTML;
     }
   }, 3000);
