@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.3.0
+// @version      1.4.0
 // @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
 // @author       martincodes & gnamly
 // @match        https://akte.dirty-gaming.com/buerger/*
@@ -9,12 +9,18 @@
 // @downloadURL  https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensytem-blitzer-rechner.user.js
 // @grant        none
 // @run-at       document-end
+// @require      https://unpkg.com/dayjs@1.8.21/plugin/customParseFormat.js
+// @require      https://unpkg.com/dayjs@1.8.21/dayjs.min.js
+// @require      https://unpkg.com/dayjs@1.8.21/locale/de.js
 // ==/UserScript==
 
 // var alertDiv = document.querySelector("div.state");
 // alertDiv.innerHTML += "<b class='stateButton' id='waffenschein-alert'>Kein Waffenschein</b>";
 
 // window.addEventListener('DOMContentLoaded', start);
+
+dayjs.extend(dayjs_plugin_customParseFormat)
+
 
 var url_pfad = "";
 var personalausweis_id ="";
@@ -25,26 +31,30 @@ var blitzer = {
     summeGeld: 0,
     summeGeschwindigkeitInner: 0,
     summeGeschwindigkeitAuser: 0,
-    akten: []
+    akten: [],
+    old: []
 };
 var eingriff = {
     count: 0,
     summeGeld: 0,
     summeGeschwindigkeitInner: 0,
     summeGeschwindigkeitAuser: 0,
-    akten: []
+    akten: [],
+    old: []
 };
 var steuer = {
     count: 0,
     summeGeld: 0,
     summeGeschwindigkeit: 0,
-    akten: []
+    akten: [],
+    old: []
 };
 var kraftstoff = {
     count: 0,
     summeGeld: 0,
     summeKraftstoff: 0,
-    akten: []
+    akten: [],
+    old: []
 }
 var fehler = false;
 var berechnungsQueue = 0;
@@ -104,109 +114,134 @@ function start() {
         // console.log('Akten Abfrage für url: '+url);
         xhr[i] = new XMLHttpRequest();
         xhr[i].open("GET", url, true);
-        xhr[i].onloadend = akteAbfrageFertig;
+        xhr[i].onloadend = function() {akteAbfrageFertig(this.status, this.responseText, systemAkte.id)};
         xhr[i].send();
     }
     if(fehler) console.log('fehler im Blitzerrechner');
 }
 
-function akteAbfrageFertig() {
+function akteAbfrageFertig(status, responseText, id) {
     // console.log("Akte "+this.responseURL+" status "+this.status);
-    if(this.status === 200) {
-        let akte = JSON.parse(this.responseText);
+    if(status === 200) {
+        let akte = JSON.parse(responseText);
+        akte.id = id;
         berechnungHinzufuegen(akte, akte.schwersteStraftat !== undefined);
     }
 }
 
 function berechnungHinzufuegen(akte, straf) {
+    const akteDatum = akte.datum.substring(akte.datum.indexOf(',')+2);
+    const dayDiff = dayjs().diff(dayjs(akteDatum, "D. MMMM YYYY", "de"), 'day');
+    akte.isStraf = straf;
     if(straf){ //Stafakten nach Gefährlichem Eingriff oder Steuerhinterziehung durchsuchen
         let regSteuer = /^StG.*Steuerhinterziehung/;
         let regGef = /^StG.*Gefährlicher Eingriff in den Straßenverkehr/;
         let regKraft = /^Kraftstoffdiebstahl/;
+        const day = dayjs(akte.datum);
         if(akte.schwersteStraftat.match(regSteuer)) {
             steuer.count++;
-            let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
-            steuer.summeGeld += parseFloat(money);
-            akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("für ")+"für ".length, akte.geschehen.indexOf("\" ")+1);
-            akte.geld = parseFloat(money);
-            steuer.akten.push(akte);
+            if(checkDiff(akte, dayDiff, steuer)) {
+                let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
+                steuer.summeGeld += parseFloat(money);
+                akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("für ")+"für ".length, akte.geschehen.indexOf("\" ")+1);
+                akte.geld = parseFloat(money);
+                steuer.akten.push(akte);
+            }
         } 
         else if(akte.schwersteStraftat.match(regGef)) {
             eingriff.count++;
-            let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
-            eingriff.summeGeld += parseInt(money);
-            let geschw = parseInt(akte.bussgeld.substring(0, akte.bussgeld.indexOf('x')));
-            if(akte.bussgeld.includes("innerorts")) eingriff.summeGeschwindigkeitInner += geschw;
-            else eingriff.summeGeschwindigkeitAuser += geschw;
-            akte.geschw = geschw;
-            akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("im Fahrzeug ")+"im Fahrzeug".length, akte.geschehen.indexOf(") ")+1);
-            akte.geld = parseInt(money);
-            eingriff.akten.push(akte);
+            if(checkDiff(akte, dayDiff, eingriff)) {
+                let money = akte.bussgeld.substring(akte.bussgeld.indexOf("$")+2).replace(".",'');
+                eingriff.summeGeld += parseInt(money);
+                let geschw = parseInt(akte.bussgeld.substring(0, akte.bussgeld.indexOf('x')));
+                if(akte.bussgeld.includes("innerorts")) eingriff.summeGeschwindigkeitInner += geschw;
+                else eingriff.summeGeschwindigkeitAuser += geschw;
+                akte.geschw = geschw;
+                akte.auto = akte.geschehen.substring(akte.geschehen.indexOf("im Fahrzeug ")+"im Fahrzeug".length, akte.geschehen.indexOf(") ")+1);
+                akte.geld = parseInt(money);
+                eingriff.akten.push(akte);
+            }
         }
         else if(akte.schwersteStraftat.match(regKraft)) {
             kraftstoff.count++;
-            const geld = parseInt(akte.bussgeld);
-            kraftstoff.summeGeld += geld;
-            const stoff = parseFloat(akte.geschehen.substring(akte.geschehen.indexOf('Liter: ')+'Liter: '.length));
-            kraftstoff.summeKraftstoff += stoff;
-            akte.geld = geld;
-            akte.stoff = stoff;
-            akte.kennzeichen = akte.geschehen.substring(akte.geschehen.indexOf('Kennzeichen ')+'Kennzeichen '.length, akte.geschehen.indexOf(' Liter')-1);
-            kraftstoff.akten.push(akte);
+            if(checkDiff(akte, dayDiff, kraftstoff)) {
+                const geld = parseInt(akte.bussgeld);
+                kraftstoff.summeGeld += geld;
+                const stoff = parseFloat(akte.geschehen.substring(akte.geschehen.indexOf('Liter: ')+'Liter: '.length));
+                kraftstoff.summeKraftstoff += stoff;
+                akte.geld = geld;
+                akte.stoff = stoff;
+                akte.kennzeichen = akte.geschehen.substring(akte.geschehen.indexOf('Kennzeichen ')+'Kennzeichen '.length, akte.geschehen.indexOf(' Liter')-1);
+                kraftstoff.akten.push(akte);
+            }
         }
     }
     else { //Bußgeldakten nach Blitzer durchsuchen
         let regBlitzer = /TC §13 Abs\. .* Überschreitung.*/i;
         if(akte.bussgeld.match(regBlitzer)) {
             blitzer.count++;
-            blitzer.summeGeld += parseInt(akte.strafe);
-            let text = akte.geschehen;
-            let suchText1 = "dies eine Geschwindigkeitsüberschreitung von ";
-            let indexSuchText1 = text.indexOf(suchText1);
-            let indexEnde = text.indexOf("km/h", indexSuchText1);
-            let geschwindigkeit = parseInt(text.substring(indexSuchText1+suchText1.length, indexEnde));
-            if(akte.bussgeld.includes("innerorts")) blitzer.summeGeschwindigkeitInner += geschwindigkeit;
-            else blitzer.summeGeschwindigkeitAuser += geschwindigkeit;
-            akte.geschw = geschwindigkeit;
-            akte.auto = text.substring(text.indexOf("im Fahrzeug ")+"im Fahrzeug".length, text.indexOf(") ")+1);
-            blitzer.akten.push(akte);
+            if(checkDiff(akte, dayDiff, blitzer)) {
+                blitzer.summeGeld += parseInt(akte.strafe);
+                let text = akte.geschehen;
+                let suchText1 = "dies eine Geschwindigkeitsüberschreitung von ";
+                let indexSuchText1 = text.indexOf(suchText1);
+                let indexEnde = text.indexOf("km/h", indexSuchText1);
+                let geschwindigkeit = parseInt(text.substring(indexSuchText1+suchText1.length, indexEnde));
+                if(akte.bussgeld.includes("innerorts")) blitzer.summeGeschwindigkeitInner += geschwindigkeit;
+                else blitzer.summeGeschwindigkeitAuser += geschwindigkeit;
+                akte.geschw = geschwindigkeit;
+                akte.auto = text.substring(text.indexOf("im Fahrzeug ")+"im Fahrzeug".length, text.indexOf(") ")+1);
+                blitzer.akten.push(akte);
+            }
         }
     }
     berechnungsQueue--;
     if(berechnungsQueue === 0) htmlDarstellen();
 }
 
-
+function checkDiff(akte, diff, liste) {
+    if(diff > 30) {
+        liste.old.push(akte)
+        return false;
+    }
+    return true;
+}
 
 function htmlDarstellen() {
+    const verjText = "<details><summary>Verjährungen</summary>LISTE</details>";
+    const verjTeil = "<div>Verjährte Akte: ID - DATUM"
     var bussgeldliste = document.querySelectorAll("ul.nav.nav-tabs")[1];
     let blitzerAlert = "<div class='alert alert-info'>"+
-    "<div>ANZAHL offene Blitzerakten gefunden.</div>"+
+    "<div>ANZAHL offene Blitzerakten gefunden. (Verjährung wird nicht berechnet)</div>"+
     "<div>Gesamt Strafe: STRAFE$</div>"+
     "<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
     "<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
     "<details><summary>Auflistung</summary>LISTE</details>"+
+    "VERJ"+
     "</div>";
     let blitzerListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
     let eingriffAlert = "<div class='alert alert-info'>"+
-    "<div>ANZAHL offene Gefährliche Eingriffe gefunden.</div>"+
+    "<div>ANZAHL offene Gefährliche Eingriffe gefunden. (Verjährung wird nicht berechnet)</div>"+
     "<div>Gesamt Strafe: STRAFE$</div>"+
     "<div>Gesamt Geschwindigkeiten Innerorts: GESCHWIkm/h</div>" +
     "<div>Gesamt Geschwindigkeiten Außerorts: GESCHWAkm/h</div>"+
     "<details><summary>Auflistung</summary>LISTE</details>"+
+    "VERJ"+
     "</div>";
     let eingriffListeTeil = "<div>ORT (WAS) mit GESCHWkm/h in einem \"AUTO\" Strafe: STRAFE$";
     let steuerAlert = "<div class='alert alert-info'>"+
-    "<div>ANZAHL offene Steuerhinterziehungen durch System gefunden.</div>"+
+    "<div>ANZAHL offene Steuerhinterziehungen durch System gefunden. (Verjährung wird nicht berechnet)</div>"+
     "<div>Gesamt Strafe: STRAFE$</div>"+
     "<details><summary>Auflistung</summary>LISTE</details>"+
+    "VERJ"+
     "</div>";
     let steuerListeTeil = "<div>Fahrzeug: \"AUTO\" Nicht einziehbarer Betrag: STRAFE$";
     let kraftstoffAlert = "<div class='alert alert-info'>"+
-    "<div>ANZAHL offene Kraftstoffdiebstähle durch System gefunden.</div>"+
+    "<div>ANZAHL offene Kraftstoffdiebstähle durch System gefunden. (Verjährung wird nicht berechnet)</div>"+
     "<div>Gesamter Betrag: BETRAG$</div>"+
     "<div>Gesamter Kraftstoff: STOFF</div>"+
     "<details><summary>Auflistung</summary>LISTE</details>"+
+    "VERJ"+
     "</div>";
     let kraftstoffListeTeil = "<div>Kennzeichen: \"KENNZEICHEN\" Kraftstoffmenge: STOFF Betrag: GELD$";
 
@@ -225,6 +260,16 @@ function htmlDarstellen() {
         blitzerListe += text;
     }
     blitzerAlert = blitzerAlert.replace("LISTE", blitzerListe);
+    var verj = "";
+    if(blitzer.old.length > 0) {
+        for(const akte of blitzer.old) {
+            let text = verjTeil;
+            text = text.replace("ID", akte.id).replace("DATUM", akte.datum);
+            verj += text;
+        }
+        verj = verjText.replace('LISTE', verj)
+    }
+    blitzerAlert = blitzerAlert.replace("VERJ", verj);
 
     eingriffAlert = eingriffAlert.replace("ANZAHL", eingriff.count);
     eingriffAlert = eingriffAlert.replace("STRAFE", eingriff.summeGeld);
@@ -238,6 +283,16 @@ function htmlDarstellen() {
         eingriffListe += text;
     }
     eingriffAlert = eingriffAlert.replace("LISTE", eingriffListe);
+    verj = "";
+    if(eingriff.old.length > 0) {
+        for(const akte of eingriff.old) {
+            let text = verjTeil;
+            text = text.replace("ID", akte.id).replace("DATUM", akte.datum);
+            verj += text;
+        }
+        verj = verjText.replace('LISTE', verj)
+    }
+    eingriffAlert = eingriffAlert.replace("VERJ", verj);
 
     steuerAlert = steuerAlert.replace("ANZAHL", steuer.count);
     steuerAlert = steuerAlert.replace("STRAFE", steuer.summeGeld);
@@ -248,6 +303,16 @@ function htmlDarstellen() {
         steuerListe += text;
     }
     steuerAlert = steuerAlert.replace("LISTE", steuerListe);
+    verj = "";
+    if(steuer.old.length > 0) {
+        for(const akte of steuer.old) {
+            let text = verjTeil;
+            text = text.replace("ID", akte.id).replace("DATUM", akte.datum);
+            verj += text;
+        }
+        verj = verjText.replace('LISTE', verj)
+    }
+    steuerAlert = steuerAlert.replace("VERJ", verj);
 
     kraftstoffAlert = kraftstoffAlert.replace("ANZAHL", kraftstoff.count);
     kraftstoffAlert = kraftstoffAlert.replace("BETRAG", kraftstoff.summeGeld);
@@ -259,10 +324,16 @@ function htmlDarstellen() {
         kraftstoffListe += text;
     }
     kraftstoffAlert = kraftstoffAlert.replace("LISTE", kraftstoffListe);
-
-
-    console.log(blitzer.count + " gefundene Blitzer");
-    console.log(eingriff.count + " gefundene Gefährliche Eingriffe");
+    verj = "";
+    if(kraftstoff.old.length > 0) {
+        for(const akte of kraftstoff.old) {
+            let text = verjTeil;
+            text = text.replace("ID", akte.id).replace("DATUM", akte.datum);
+            verj += text;
+        }
+        verj = verjText.replace('LISTE', verj)
+    }
+    kraftstoffAlert = kraftstoffAlert.replace("VERJ", verj);
 
     var finaleErweiterung = "<br/><br/>";
     if(blitzer.count === 0 && eingriff.count === 0 && steuer.count === 0 && kraftstoff.count === 0){
