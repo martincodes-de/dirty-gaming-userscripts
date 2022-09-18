@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern Zusammenfassen
-// @version      1.4.0
-// @description  Gibt übersicht über alle offenen Blitzerakten und Rechnet diese zusammen.
-// @author       martincodes & gnamly
+// @name         Dirty-Gaming.com Aktensystemverbesserung: Blitzerakten in Bußgeldern zusammenfassen
+// @version      1.5.0
+// @description  Gibt übersicht über alle offenen Blitzerakten und rechnet diese zusammen.
+// @author       gnamly & martincodes & P4yn3
 // @match        https://akte.dirty-gaming.com/buerger/*
 // @icon         https://i.imgur.com/q2zMMHS.png
 // @updateURL    https://raw.githubusercontent.com/martincodes-de/dirty-gaming-userscripts/main/aktensytem-blitzer-rechner.user.js
@@ -133,7 +133,7 @@ function berechnungHinzufuegen(akte, straf) {
     const akteDatum = akte.datum.substring(akte.datum.indexOf(',')+2);
     const dayDiff = dayjs().diff(dayjs(akteDatum, "D. MMMM YYYY", "de"), 'day');
     akte.isStraf = straf;
-    if(straf){ //Stafakten nach Gefährlichem Eingriff oder Steuerhinterziehung durchsuchen
+    if(straf){ //Stafakten nach Gefährlichem Eingriff oder Steuerhinterziehung oder Krafststoffdiebstahl durchsuchen
         let regSteuer = /^StG.*Steuerhinterziehung/;
         let regGef = /^StG.*Gefährlicher Eingriff in den Straßenverkehr/;
         let regKraft = /^Kraftstoffdiebstahl/;
@@ -177,7 +177,7 @@ function berechnungHinzufuegen(akte, straf) {
         }
     }
     else { //Bußgeldakten nach Blitzer durchsuchen
-        let regBlitzer = /TC §13 Abs\. .* Überschreitung.*/i;
+        let regBlitzer = /VoG §22 Abs\. .* Geschwindigkeitsübertretung.*/i;
         if(akte.bussgeld.match(regBlitzer)) {
             blitzer.count++;
             if(checkDiff(akte, dayDiff, blitzer)) {
@@ -187,7 +187,7 @@ function berechnungHinzufuegen(akte, straf) {
                 let indexSuchText1 = text.indexOf(suchText1);
                 let indexEnde = text.indexOf("km/h", indexSuchText1);
                 let geschwindigkeit = parseInt(text.substring(indexSuchText1+suchText1.length, indexEnde));
-                if(akte.bussgeld.includes("innerorts")) blitzer.summeGeschwindigkeitInner += geschwindigkeit;
+                if(akte.bussgeld.includes("Innerorts")) blitzer.summeGeschwindigkeitInner += geschwindigkeit;
                 else blitzer.summeGeschwindigkeitAuser += geschwindigkeit;
                 akte.geschw = geschwindigkeit;
                 akte.auto = text.substring(text.indexOf("im Fahrzeug ")+"im Fahrzeug".length, text.indexOf(") ")+1);
@@ -255,7 +255,7 @@ function htmlDarstellen() {
     var blitzerListe = "";
     for(const akte of blitzer.akten) {
         let text = blitzerListeTeil;
-        text = text.replace("ORT", akte.einsatzort).replace("WAS", akte.bussgeld.includes("innerorts") ? "innerorts" : "außerorts");
+        text = text.replace("ORT", akte.einsatzort).replace("WAS", akte.bussgeld.includes("Innerorts") ? "innerorts" : "außerorts");
         text = text.replace("GESCHW", akte.geschw).replace("AUTO", akte.auto).replace("STRAFE", akte.strafe);
         blitzerListe += text;
     }
@@ -278,7 +278,7 @@ function htmlDarstellen() {
     var eingriffListe = "";
     for(const akte of eingriff.akten) {
         let text = eingriffListeTeil;
-        text = text.replace("ORT", akte.einsatzort).replace("WAS", akte.bussgeld.includes("innerorts") ? "innerorts" : "außerorts");
+        text = text.replace("ORT", akte.einsatzort).replace("WAS", akte.bussgeld.includes("Innerorts") ? "innerorts" : "außerorts");
         text = text.replace("GESCHW", akte.geschw).replace("AUTO", akte.auto).replace("STRAFE", akte.geld);
         eingriffListe += text;
     }
