@@ -110,7 +110,7 @@ function start() {
         let url = "";
         if(systemAkte.aktetyp === "Polizei Bussgeld") url = "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Bussgeld/"+systemAkte.id;
         else url = "https://akte.dirty-gaming.com/fallakten/buerger/Polizei%20Strafsache/"+systemAkte.id;
-        
+
         // console.log('Akten Abfrage für url: '+url);
         xhr[i] = new XMLHttpRequest();
         xhr[i].open("GET", url, true);
@@ -147,7 +147,7 @@ function berechnungHinzufuegen(akte, straf) {
                 akte.geld = parseFloat(money);
                 steuer.akten.push(akte);
             }
-        } 
+        }
         else if(akte.schwersteStraftat.match(regGef)) {
             eingriff.count++;
             if(checkDiff(akte, dayDiff, eingriff)) {
@@ -177,7 +177,7 @@ function berechnungHinzufuegen(akte, straf) {
         }
     }
     else { //Bußgeldakten nach Blitzer durchsuchen
-        let regBlitzer = /VoG §22 Abs\. .* Geschwindigkeitsübertretung.*/i;
+        let regBlitzer = /VoG §22 Abs\. .* .Geschwindigkeitsübertretung.*/i;
         if(akte.bussgeld.match(regBlitzer)) {
             blitzer.count++;
             if(checkDiff(akte, dayDiff, blitzer)) {
